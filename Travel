@@ -1,0 +1,60 @@
+package connect;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Scanner;
+
+public class Travel {
+	public static void main(String[] args) {
+		try
+		{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","system","admin");
+		Statement stmt=con.createStatement();
+		 java.util.Date date = new java.util.Date();
+		long t = date.getTime();
+		String card_numm;
+		
+		String mot;
+		String fr_st;
+		java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp(t);
+		Scanner s=new Scanner(System.in);
+		System.out.println("Enter card_num, mode, From Station");
+		card_numm=s.next();
+		
+		mot=s.next();
+		fr_st=s.next();
+		
+		PreparedStatement ps=con.prepareStatement("insert into card_trans (card_num,ent_tim,mot,f_station) values(?,?,?,?)");
+		ps.setString(1, card_numm);
+		ps.setTimestamp(2, sqlTimestamp);
+		ps.setString(3, mot );
+		ps.setString(4, fr_st);
+		
+		int n=ps.executeUpdate();
+		
+		System.out.println(n+" rows updated");
+		
+		
+		
+		ResultSet rs=stmt.executeQuery("select * from card_trans");
+		System.out.println("card_num"+"\t"+"ent_time"+"\t"+"\t"+"mode"+"\t"+"\t"+"from");
+		while(rs.next())
+			{
+			System.out.println(rs.getString(1)+"\t"+rs.getString(2)+"\t"+"\t"+rs.getString(3)+"\t"+"\t"+rs.getString(4));
+			}
+		stmt.close();
+		
+		ps.close();
+		con.close();
+		}
+	catch(Exception e)
+		{
+		e.printStackTrace();
+		}
+
+	}
+}
